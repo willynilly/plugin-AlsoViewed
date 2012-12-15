@@ -78,7 +78,6 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
     {
         $item = get_current_record('item');        
         $this->_trackItem($item);
-        echo also_viewed_related_item_links($item);
     }
     
     protected function _trackItem($item) 

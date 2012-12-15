@@ -1,6 +1,16 @@
 <?php
 /**
- * Also Viewed
+ * Also Viewed plugin
+ *
+ * This plugin is easy to use.  Just install it and then add the following code to your
+ * items/show.php theme page:
+ *
+ * <div>
+ * <?php echo also_viewed_related_item_links(); ?>
+ * </div>
+ *
+ * For more information on how to use these global functions, check out:
+ * helpers/AlsoViewedFunctions.php
  * 
  * @copyright Copyright 2012 Will Riley 
  * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU GPLv3

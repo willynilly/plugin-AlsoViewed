@@ -102,7 +102,7 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
         $displayItemCount = self::DEFAULT_DISPLAY_ITEM_COUNT;
         $item = get_current_record('item');        
         $html = '<div class="panel" id="also-viewed-related-items-total">';
-        $html .= '<h4>' . __('Top Related Items (Viewed Before and After)') . '</h4>';
+        $html .= '<h4>' . __('Top %s Related Items (Viewed Before and After)', $displayItemCount) . '</h4>';
         $html .= also_viewed_related_item_links($item, 
                                                 'total_view_count', 
                                                 'd', 
@@ -111,7 +111,7 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
                                                 true);
         $html .= '</div>';
         $html .= '<div class="panel" id="also-viewed-related-items-before">';
-        $html .= '<h4>' . __('Top Related Items (Viewed Before)') . '</h4>';
+        $html .= '<h4>' . __('Top %s Related Items (Viewed Before)', $displayItemCount) . '</h4>';
         $html .= also_viewed_related_item_links($item, 
                                                 'before_view_count', 
                                                 'd', 
@@ -120,7 +120,7 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
                                                 true);
         $html .= '</div>';
         $html .= '<div class="panel" id="also-viewed-related-items-after">';
-        $html .= '<h4>' . __('Top Related Items (Viewed After)') . '</h4>';
+        $html .= '<h4>' . __('Top %s Related Items (Viewed After)', $displayItemCount) . '</h4>';
         $html .= also_viewed_related_item_links($item, 
                                                 'after_view_count', 
                                                 'd', 

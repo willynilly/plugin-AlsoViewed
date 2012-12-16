@@ -34,19 +34,11 @@
 class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
 {    
     protected $_hooks = array(
-        'initialize',
         'install',
         'uninstall',
         'public_items_show',
         'admin_items_show_sidebar'
     );
-    
-    /**
-     * Initialize the plugin.
-     */
-    public function hookInitialize()
-    {                
-    }
     
     /**
      * Install the plugin.
@@ -140,7 +132,14 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
         
         echo $html;
     }
-    
+
+    /**
+     * Increments the before view count for the previous item as coming after the base item
+     * and increments the after view count for the base item as coming after the previously viewed
+     * item. 
+     *
+     * @param Item $item The base item to track. 
+     */    
     protected function _trackItem($item) 
     {
         $session = new Zend_Session_Namespace('AlsoViewed');

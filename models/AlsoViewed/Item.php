@@ -16,8 +16,12 @@ class AlsoViewed_Item extends Omeka_Record_AbstractRecord
     public $added;
     public $modified;
     
+    /**
+     * Initializes the mixins
+     */
     protected function _initializeMixins()
     {
+        // Add timestamp mixin for $added and $modified
         $this->_mixins[] = new Mixin_Timestamp($this);
     }
     

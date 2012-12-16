@@ -32,7 +32,10 @@ require_once dirname(__FILE__) . '/helpers/AlsoViewedFunctions.php';
  * @package Omeka\Plugins\AlsoViewed
  */
 class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
-{    
+{
+    const DEFAULT_DISPLAY_ITEM_COUNT = 5; // the maximum number of items 
+                                          // to display in each admin sidebar widget
+    
     protected $_hooks = array(
         'install',
         'uninstall',
@@ -96,15 +99,14 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function hookAdminItemsShowSidebar()
     {
-        $maxItemCount = 5;
+        $displayItemCount = self::DEFAULT_DISPLAY_ITEM_COUNT;
         $item = get_current_record('item');        
-        $html = '';
-        $html .= '<div class="panel" id="also-viewed-related-items-total">';
+        $html = '<div class="panel" id="also-viewed-related-items-total">';
         $html .= '<h4>' . __('Top Related Items (Viewed Before and After)') . '</h4>';
         $html .= also_viewed_related_item_links($item, 
                                                 'total_view_count', 
                                                 'd', 
-                                                $maxItemCount,
+                                                $displayItemCount,
                                                 null,
                                                 true);
         $html .= '</div>';
@@ -113,7 +115,7 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
         $html .= also_viewed_related_item_links($item, 
                                                 'before_view_count', 
                                                 'd', 
-                                                $maxItemCount, 
+                                                $displayItemCount, 
                                                 null, 
                                                 true);
         $html .= '</div>';
@@ -122,7 +124,7 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
         $html .= also_viewed_related_item_links($item, 
                                                 'after_view_count', 
                                                 'd', 
-                                                $maxItemCount,
+                                                $displayItemCount,
                                                 null,
                                                 true);
         $html .= '</div>';
@@ -138,43 +140,45 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
      */    
     protected function _trackItem($item) 
     {
-        $session = new Zend_Session_Namespace('AlsoViewed');
-        if ($item and $item->exists()) {            
-            $db = $this->_db;            
-            if (isset($session->prevItemId)) {                
-                $prevItemId = (int)$session->prevItemId;
-                if ($prevItemId) {
-                    $prevItem = $db->getTable('Item')->find($prevItemId);
-                    if ($prevItem && $prevItem->id != $item->id) {
-                        $tbl = $db->getTable('AlsoViewed_Item');
-                        $av = $tbl->findBy(array('item_id' => $prevItem->id, 
-                                                 'related_item_id' => $item->id));
-                        if (!$av) {
-                            $av = new AlsoViewed_Item;
-                            $av->item_id = $prevItem->id;
-                            $av->related_item_id = $item->id;
-                        } else {
-                            $av = $av[0];
-                        } 
-                        $av->after_view_count++;                        
-                        $av->total_view_count++;
-                        $av->save();
-                        $av = $tbl->findBy(array('item_id' => $item->id, 
-                                                 'related_item_id' => $prevItem->id));
-                        if (!$av) {
-                            $av = new AlsoViewed_Item;
-                            $av->item_id = $item->id;
-                            $av->related_item_id = $prevItem->id;
-                        } else {
-                            $av = $av[0];
+        if (!current_user()) {
+            $session = new Zend_Session_Namespace('AlsoViewed');
+            if ($item and $item->exists()) {            
+                $db = $this->_db;            
+                if (isset($session->prevItemId)) {                
+                    $prevItemId = (int)$session->prevItemId;
+                    if ($prevItemId) {
+                        $prevItem = $db->getTable('Item')->find($prevItemId);
+                        if ($prevItem && $prevItem->id != $item->id) {
+                            $tbl = $db->getTable('AlsoViewed_Item');
+                            $av = $tbl->findBy(array('item_id' => $prevItem->id, 
+                                                     'related_item_id' => $item->id));
+                            if (!$av) {
+                                $av = new AlsoViewed_Item;
+                                $av->item_id = $prevItem->id;
+                                $av->related_item_id = $item->id;
+                            } else {
+                                $av = $av[0];
+                            } 
+                            $av->after_view_count++;                        
+                            $av->total_view_count++;
+                            $av->save();
+                            $av = $tbl->findBy(array('item_id' => $item->id, 
+                                                     'related_item_id' => $prevItem->id));
+                            if (!$av) {
+                                $av = new AlsoViewed_Item;
+                                $av->item_id = $item->id;
+                                $av->related_item_id = $prevItem->id;
+                            } else {
+                                $av = $av[0];
+                            }
+                            $av->before_view_count++;
+                            $av->total_view_count++;
+                            $av->save();
                         }
-                        $av->before_view_count++;
-                        $av->total_view_count++;
-                        $av->save();
                     }
                 }
+                $session->prevItemId = $item->id;
             }
-            $session->prevItemId = $item->id;
         }
     }
 }

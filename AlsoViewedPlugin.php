@@ -2,7 +2,12 @@
 /**
  * Also Viewed plugin
  *
- * This plugin is easy to use.  Just install it and then add the following code to your
+ * This plugin tracks how often items were viewed before and after each other.
+ * After installing the plugin, it will count item public page views by anonymous users.
+ * If a user is logged in, it will not count page views.
+ *
+ * The plugin also provides some global functions to show related item links.
+ * For example, you can add the following code to your
  * items/show.php theme page:
  *
  * <div>
@@ -11,6 +16,9 @@
  *
  * For more information on how to use these global functions, check out:
  * helpers/AlsoViewedFunctions.php
+ *
+ * In addition, the plugin automatically shows the 
+ * top related items for each item on the admin items show page sidebar.
  * 
  * @copyright Copyright 2012 Will Riley 
  * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU GPLv3
@@ -29,7 +37,8 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
         'initialize',
         'install',
         'uninstall',
-        'public_items_show'
+        'public_items_show',
+        'admin_items_show_sidebar'
     );
     
     /**
@@ -88,6 +97,48 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
     {
         $item = get_current_record('item');        
         $this->_trackItem($item);
+    }
+    
+    /**
+     * Show the top total, before, and after related items on the admin items show page.
+     */
+    public function hookAdminItemsShowSidebar()
+    {
+        $maxItemCount = 5;
+        $item = get_current_record('item');        
+        $html = '';
+        
+        $html .= '<div class="panel" id="also-viewed-related-items-total">';
+        $html .= '<h4>' . __('Top Related Items (Viewed Before and After)') . '</h4>';
+        $html .= also_viewed_related_item_links($item, 
+                                                'total_view_count', 
+                                                'd', 
+                                                $maxItemCount,
+                                                null,
+                                                true);
+        $html .= '</div>';
+        
+        $html .= '<div class="panel" id="also-viewed-related-items-before">';
+        $html .= '<h4>' . __('Top Related Items (Viewed Before)') . '</h4>';
+        $html .= also_viewed_related_item_links($item, 
+                                                'before_view_count', 
+                                                'd', 
+                                                $maxItemCount, 
+                                                null, 
+                                                true);
+        $html .= '</div>';
+        
+        $html .= '<div class="panel" id="also-viewed-related-items-after">';
+        $html .= '<h4>' . __('Top Related Items (Viewed After)') . '</h4>';
+        $html .= also_viewed_related_item_links($item, 
+                                                'after_view_count', 
+                                                'd', 
+                                                $maxItemCount,
+                                                null,
+                                                true);
+        $html .= '</div>';
+        
+        echo $html;
     }
     
     protected function _trackItem($item) 

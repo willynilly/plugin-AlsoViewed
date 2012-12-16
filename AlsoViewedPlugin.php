@@ -24,7 +24,7 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU GPLv3
  */
 
- require_once dirname(__FILE__) . '/helpers/AlsoViewedFunctions.php';
+require_once dirname(__FILE__) . '/helpers/AlsoViewedFunctions.php';
 
 /**
  * The Also Viewed plugin.
@@ -99,7 +99,6 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
         $maxItemCount = 5;
         $item = get_current_record('item');        
         $html = '';
-        
         $html .= '<div class="panel" id="also-viewed-related-items-total">';
         $html .= '<h4>' . __('Top Related Items (Viewed Before and After)') . '</h4>';
         $html .= also_viewed_related_item_links($item, 
@@ -109,7 +108,6 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
                                                 null,
                                                 true);
         $html .= '</div>';
-        
         $html .= '<div class="panel" id="also-viewed-related-items-before">';
         $html .= '<h4>' . __('Top Related Items (Viewed Before)') . '</h4>';
         $html .= also_viewed_related_item_links($item, 
@@ -119,7 +117,6 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
                                                 null, 
                                                 true);
         $html .= '</div>';
-        
         $html .= '<div class="panel" id="also-viewed-related-items-after">';
         $html .= '<h4>' . __('Top Related Items (Viewed After)') . '</h4>';
         $html .= also_viewed_related_item_links($item, 
@@ -129,7 +126,6 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
                                                 null,
                                                 true);
         $html .= '</div>';
-        
         echo $html;
     }
 
@@ -151,7 +147,6 @@ class AlsoViewedPlugin extends Omeka_Plugin_AbstractPlugin
                     $prevItem = $db->getTable('Item')->find($prevItemId);
                     if ($prevItem && $prevItem->id != $item->id) {
                         $tbl = $db->getTable('AlsoViewed_Item');
-
                         $av = $tbl->findBy(array('item_id' => $prevItem->id, 
                                                  'related_item_id' => $item->id));
                         if (!$av) {
